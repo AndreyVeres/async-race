@@ -41,7 +41,7 @@ export default class Garage {
     await this.loader.getData(`garage?_page=${this.currentPage}&_limit=${this.pageSize}`)
       .then((res: Response) => {
         this.allCarsCount = res.headers.get('X-Total-Count');
-        this.title.innerHTML = `Garage size is ${this.allCarsCount}`;
+        this.title.innerHTML = `Garage size : ${this.allCarsCount}`;
         this.pageTitle.innerHTML = `page : ${this.currentPage}`;
         return res.json();
       })
