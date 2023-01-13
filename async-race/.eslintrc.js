@@ -4,20 +4,17 @@ module.exports = {
     browser: true,
     node: true,
     es2022: true,
-    'jest/globals': true,
+
   },
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        extensions: ['.js', '.ts'],
       },
     },
   },
   extends: [
     'airbnb',
-    'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-    'plugin:react-hooks/recommended',
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
   ],
@@ -30,9 +27,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: [
-    'react',
     '@typescript-eslint',
-    'jest',
   ],
   rules: {
     /*
