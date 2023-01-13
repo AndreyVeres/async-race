@@ -1,3 +1,5 @@
-console.log('eeeeeeeeee');
+import './main.css';
+import App from './components/App';
 
-export { };
+const app = new App();
+app.start();

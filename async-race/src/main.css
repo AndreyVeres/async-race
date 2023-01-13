@@ -1,0 +1,64 @@
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px 10px;
+}
+
+body {
+  background-color: black;
+  color: #fff;
+}
+
+button {
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.car__list {
+  display: flex;
+  flex-direction: column;
+}
+
+.controls__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.car__box {
+  border: 1px solid #fff;
+  border-bottom: 1px dotted #fff;
+}
+
+.road {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+
+}
+
+.flag {
+  position: absolute;
+  right: 104px;
+  top: -8px;
+}
+
+.car__image {
+  width: 50px;
+}
+
+.road {
+  width: 100%;
+  border-bottom: 1px solid black;
+  height: 50px;
+}
+
+
+.disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
