@@ -1,3 +1,4 @@
+import Car from './Car';
 import Garage from './Garage';
 import View from './View';
 import Winners from './Winners';
@@ -6,11 +7,11 @@ export default class App {
   private container: HTMLElement;
   private winners: Winners;
   private garage: Garage;
-
   constructor() {
     this.container = document.body;
     this.garage = new Garage();
     this.winners = new Winners();
+
   }
 
   static changePage() {
@@ -34,6 +35,10 @@ export default class App {
     this.container.append(this.garage.render());
     this.container.append(this.winners.render());
     this.container.append(View.renderPageButtons());
+
+
+
+
     App.changePage();
 
     const formCreate = document.querySelector('.create');
@@ -66,15 +71,11 @@ export default class App {
         this.garage.selectCarToUpdate(id);
       }
 
-      if (target.classList.contains('remove') && id) {
+      if (target.classList.contains('remove-button') && id) {
+
         this.garage.deleteCar(id);
       }
 
-      // if (e.target.classList.contains('start-button')) {
-      //   // const carImage = document.getElementById(`${id}-img`);
-      //   // const engineParams = animateCar(carImage);
-      //   // startEndine(id);
-      // }
     });
   }
 }

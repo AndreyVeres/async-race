@@ -1,6 +1,7 @@
 import View from './View';
 import Loader from './Loader';
 import { ICar, METHODS } from '../types/types';
+import Car from './Car';
 
 export default class Garage {
   private container: HTMLElement;
@@ -8,9 +9,10 @@ export default class Garage {
   private title: HTMLElement;
   private pageTitle: HTMLElement;
   private allCarsCount: string | null;
-  private loader: Loader;
+  protected loader: Loader;
   private pageSize: number;
   private currentPage: number;
+  private carsInGarage: any[]
   constructor() {
     this.loader = new Loader();
     this.container = document.createElement('div');
@@ -20,6 +22,7 @@ export default class Garage {
     this.currentPage = 1;
     this.allCarsCount = '';
     this.pageSize = 7;
+    this.carsInGarage = []
   }
 
   prevPage() {
@@ -46,7 +49,11 @@ export default class Garage {
         return res.json();
       })
       .then((cars: ICar[]) => {
-        cars.map((car: ICar) => this.carList.append(View.renderCar(car)));
+
+        cars.map((car: ICar) => {
+          const newCar = new Car(car).render();
+          this.carList.append(newCar)
+        });
       });
   }
 
@@ -62,9 +69,11 @@ export default class Garage {
     await this.loader.getData('garage', METHODS.POST, newCarProps)
       .then((res: Response) => res.json())
       .then((car: ICar) => {
-        this.carList.append(View.renderCar(car));
-        this.updateGarage();
+        const newCar = new Car(car).render()
+        this.carList.append(newCar)
+        this.updateGarage()
       });
+     
   }
 
   deleteCar(id: string) {
@@ -113,6 +122,11 @@ export default class Garage {
     this.container.append(this.pageTitle);
     this.container.append(this.carList);
     this.container.classList.add('garage');
+    this.carList.classList.add('car__list');
+
+
+    
+
     return this.container;
   }
 }
