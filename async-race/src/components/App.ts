@@ -11,7 +11,6 @@ export default class App {
     this.container = document.body;
     this.garage = new Garage();
     this.winners = new Winners();
-
   }
 
   static changePage() {
@@ -35,9 +34,6 @@ export default class App {
     this.container.append(this.garage.render());
     this.container.append(this.winners.render());
     this.container.append(View.renderPageButtons());
-
-
-
 
     App.changePage();
 
@@ -72,28 +68,8 @@ export default class App {
       }
 
       if (target.classList.contains('remove-button') && id) {
-
         this.garage.deleteCar(id);
       }
-
     });
   }
 }
-
-// async function startEndine(id: number) {
-//   const request = await fetch('http://127.0.0.1:3000/garage/page=2&_limit=7', {
-
-//     method: 'GET',
-//   });
-
-//   const response = await request.json();
-//   console.log(response);
-//   return response;
-// }
-
-// const animateCar = (element: HTMLElement | null) => {
-//   const car = element;
-//   if (car) {
-//     car.style.display = 'none';
-//   }
-// };
