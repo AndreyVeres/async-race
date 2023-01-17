@@ -4,7 +4,7 @@ import Car from './Car';
 
 export default class Garage {
   private container: HTMLElement = document.createElement('div');
-  public carList: HTMLElement;
+  private carList: HTMLElement;
   private title: HTMLElement = document.createElement('h1');
   private pageTitle: HTMLElement = document.createElement('div');
   private allCarsCount: string | null = '';
@@ -13,15 +13,7 @@ export default class Garage {
   private currentPage = 1;
   private carsInGarage: Car[] = [];
   constructor() {
-    //   // this.loader = new Loader();
-    //   // this.container;
     this.carList = document.createElement('div');
-    //   // this.title;
-    //   // this.pageTitle;
-    //   // this.currentPage = 1;
-    //   // this.allCarsCount = '';
-    //   // this.pageSize = 7;
-    //   // this.carsInGarage = [];
   }
 
   prevPage() {
@@ -128,10 +120,6 @@ export default class Garage {
     });
   };
 
-  // static remove = () => {
-  //   this.container.remove();
-  // };
-
   async render() {
     await this.initGarage();
     this.container.append(this.title);
@@ -140,11 +128,6 @@ export default class Garage {
     this.container.classList.add('garage');
     this.carList.classList.add('car__list');
 
-    // const raceButton = document.querySelector('.race-button');
-    // const resetButton = document.querySelector('.reset-button');
-
-    // raceButton?.addEventListener('click', this.raceDEMO);
-    // resetButton?.addEventListener('click', this.resetAllCars);
     return this.container;
   }
 }

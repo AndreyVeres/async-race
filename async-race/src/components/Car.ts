@@ -5,6 +5,7 @@ import View from './View';
 import flagImage from '../assets/racing-flag.svg';
 import Loader from './Loader';
 import animation from './animation';
+import { Store } from './Store';
 
 interface IControlsButton {
   button: HTMLButtonElement;
@@ -66,7 +67,8 @@ export default class Car {
     try {
       await this.drive();
     } catch (error) {
-      cancelAnimationFrame(Car.animations[this.car.id]);
+      // cancelAnimationFrame(Car.animations[this.car.id]);
+      cancelAnimationFrame(Store.animations[this.car.id]);
     }
   };
 
@@ -80,7 +82,8 @@ export default class Car {
       .then(() => {
         this.engineStatus = ENGINESTATE.STOPPED;
         this.switchButtonsState();
-        cancelAnimationFrame(Car.animations[this.car.id]);
+        cancelAnimationFrame(Store.animations[this.car.id]);
+        // cancelAnimationFrame(Car.animations[this.car.id]);
         this.driver.style.transform = `translateX(${0}px)`;
       });
   };

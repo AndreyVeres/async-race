@@ -1,45 +1,7 @@
-import { ICar } from '../types/types';
+import { ICar, IWinner, IWinnerCar } from '../types/types';
 import flagImage from '../assets/racing-flag.svg';
 
 export default class View {
-  static renderControls() {
-    const controlsHTML = document.createElement('div');
-    controlsHTML.classList.add('controls');
-    controlsHTML.innerHTML = `
-
-      <form class="create">
-        <input type="text" class="create-text" name="carName">
-        <input type="color" class="create-color" value="#E3B67E" name="carColor">
-        <button class=" create-button">create</button>
-      </form>
-      <form class="update disabled">
-        <input name="carName" type="text" class="update-text">
-        <input name="carColor" type="color" class="update-color" value="#E3B67E">
-        <input name="carId" type="hidden" class="update-id ">
-        <button class="form-button update-button ">update</button>
-      </form>
-      <div class="controls__item">
-        <button class="menu-button race-button">race</button>
-        <button class="menu-button reset-button">reset</button>
-        <button class="form-button generate-button">generate cars</button>
-      </div>
-
-    `;
-
-    return controlsHTML;
-  }
-
-  static renderNavigation() {
-    const headerNavigationHTML = document.createElement('div');
-    headerNavigationHTML.classList.add('navigation');
-    headerNavigationHTML.innerHTML = `
-      <a href="#garage">to garage</a>
-      <a href="#winners">to winners</a>
-    `;
-
-    return headerNavigationHTML;
-  }
-
   static renderCarImage(color: string) {
     return `
     <svg class="car__image" version="1.0" xmlns="http://www.w3.org/2000/svg"
@@ -135,69 +97,44 @@ export default class View {
     `;
   }
 
-  static renderCar(car: ICar) {
-    const carHTML = document.createElement('div');
-    carHTML.classList.add('car__box');
-    carHTML.setAttribute('id', `${car.id}`);
-    carHTML.innerHTML = `
-        <button data-id=${car.id} class="remove">remove</button>
-        <button data-id=${car.id}  class="select">select</button>
-        <span>${car.name}</span>
-        <div class="road">
-          <button data-id=${car.id} class="start-button">a</button>
-          <button data-id=${car.id} class="stop-button disabled-button">b</button>
-          <div class="car" id=${car.id}-img>
-           ${View.renderCarImage(car.color)}
-          </div>
-          <img class="flag" src=${flagImage} width="50">
-
-      `;
-    return carHTML;
-  }
-
   static renderWinners() {
-    const winnersHTML = document.createElement('div');
+    const winnersHTML = document.createElement('table');
+    winnersHTML.classList.add('winners');
     winnersHTML.innerHTML = `
-    <table class="winners-table">
-    <tbody>
-      <tr>
-        <th>Number</th>
-        <th>Car</th>
-        <th>Name</th>
-        <th class="wins-th">Wins <img class="arrow-wins" width="20" style="visibility: hidden;"></th>
-        <th class="time-th">Best time (seconds) <img class="arrow-time" width="20" style="visibility: hidden;"></th>
-      </tr>
-      <tr>
-        <td>1</td>
-        <td><img
-            src="data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgIHdpZHRoPSIxMjgwLjAwMDAwMHB0IiBoZWlnaHQ9IjY0MC4wMDAwMDBwdCIgdmlld0JveD0iMCAwIDEyODAuMDAwMDAwIDY0MC4wMDAwMDAiCiAgICBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCBtZWV0Ij4KICAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMC4wMDAwMDAsNjQwLjAwMDAwMCkgc2NhbGUoMC4xMDAwMDAsLTAuMTAwMDAwKSIKICAgZmlsbD0iIzY4Njg2OCIgc3Ryb2tlPSJub25lIj4KICAgPHBhdGggZmlsbD0iI2UzYjY3ZSIgZD0iTTM1NjUgNTMzNiBjLTEwNiAtMzAgLTEwMSAtMjYgLTEwOCAtMTExIC00IC00MiAtOQogICAtODAgLTEyIC04NSAtNiAtMTAgLTI0NiAtMTA1IC01OTAgLTIzNCAtNDQ4IC0xNjcgLTEwNTIgLTQxNSAtMTE3MyAtNDgzIC03OAogICAtNDMgLTE5MyAtOTEgLTI1MCAtMTA0IC0yMyAtNSAtOTggLTE0IC0xNjUgLTE5IC02NyAtNiAtMTY3IC0xOSAtMjIyIC0zMCAtMTU0CiAgIC0zMSAtMzQwIC00OSAtNTYzIC01NyBsLTIwMyAtNiAtNDMgLTY2IGMtNTkgLTkxIC02MCAtOTUgLTI2IC0xMzAgMzcgLTM3IDM4IC02NSAzCiAgIC0xNTAgLTI1IC02MiAtMjcgLTc4IC0zMSAtMjU2IGwtNCAtMTkwIC0zOCAtMzIgYy05MSAtNzggLTEzMyAtMjA5IC0xMzQgLTQxOAogICAwIC0xOTQgMTEgLTM5NiAyNiAtNDgyIDEzIC03MSAxNCAtNzQgNzIgLTEyMiA2OSAtNTggMTMwIC0xMjkgMTU4IC0xODQgNjQKICAgLTEyNiA1MzQgLTIxMSAxMzg0IC0yNTAgbDkyIC00IC02IDExOSBjLTYgMTQyIDggMjU2IDQ5IDM4MyAxMTIgMzUyIDM5NCA2MjIKICAgNzU2IDcyMiA5MCAyNiAxMTIgMjggMjc4IDI4IDE2NSAwIDE4OCAtMiAyNzggLTI3IDIwMSAtNTYgMzYxIC0xNTIgNTA0IC0zMDIKICAgMTQwIC0xNDUgMjIyIC0yOTMgMjc0IC00OTIgMjEgLTc5IDI0IC0xMDkgMjMgLTI3OSAtMSAtMTI3IC02IC0yMTQgLTE2IC0yNjMKICAgbC0xNSAtNzMgMzAwNiA3IGMxNjUzIDQgMzAwNyA4IDMwMDkgOSAxIDEgLTggMzcgLTIwIDgxIC0xOSA2NyAtMjIgMTA1IC0yMgogICAyNTkgLTEgMTY2IDEgMTg3IDI3IDI3OSAxMTcgNDIxIDQ2NyA3MzYgODg1IDc5NyAxMTkgMTcgMzI1IDcgNDMyIC0yMSAyMzkKICAgLTYzIDQ1MyAtMjA1IDYwMSAtMzk5IDcwIC05MiAxNTQgLTI2NyAxODUgLTM4NiAyNCAtODggMjcgLTExOSAyNyAtMjYwIDEKICAgLTExNiAtNCAtMTgxIC0xNiAtMjM0IC0xMCAtNDEgLTE2IC03NSAtMTUgLTc2IDIgLTEgNjIgMiAxMzMgNiAyNjYgMTYgNDU4IDQ1CiAgIDUyNSA3OSA0OCAyNCA5NyA4MSAxMjcgMTQ2IGwyNCA1MiAtMTYgMTU3IGMtMTUgMTUyIC0xNSAxNjMgNCAyODQgNjMgMzg4IDUwCiAgIDY4MCAtMzUgODAyIC0xMzQgMTkzIC01MjYgMzM2IC0xNDI5IDUxOSAtNzM3IDE0OSAtMTMyMiAyMDkgLTIwMzMgMjEwIC0yMjggMAogICAtMjI2IDAgLTM0NyA4NSAtMTg3IDEzMSAtMTA0NSA2MDcgLTE0NzEgODE1IC0zODMgMTg3IC03ODggMjgxIC0xNDM5IDMzMgogICAtMjA4IDE3IC0xMTA2IDE2IC0xNDAwIDAgLTEyMSAtNyAtMzE0IC0xOSAtNDMwIC0yNyAtMzAyIC0yMiAtMjg2IC0yMiAtMzQxCiAgIDEwIC0xNDAgODEgLTE4NyA5NCAtMjY5IDcxeiBtMTg4NSAtMzMzIGM2IC0zNyAzOCAtMjM4IDcxIC00NDYgMzIgLTIwOSA2NgogICAtNDIyIDc1IC00NzQgOSAtNTIgMTUgLTk2IDEzIC05NyAtMTEgLTkgLTE2OTkgMjkgLTE5NTEgNDQgLTIwNiAxMyAtNDE3IDM2CiAgIC00ODUgNTQgLTk4IDI2IC0xOTggMTE5IC0yNDkgMjMxIC0zNSA3NSAtMzYgMTcyIC01IDI1NSAxNyA0NSAzMCA2MSA2OCA4NiA4MwogICA1NCAxMzUgODAgMjUzIDEyNyAzNDEgMTM2IDg1OCAyMzAgMTQ2MCAyNjcgMjY5IDE2IDI3MCAxNiA1MTEgMTggbDIyNyAyIDEyCiAgIC02N3ogbTYzMCA0NyBjMjY0IC0xOCA3NzcgLTExMCAxMDI5IC0xODYgMTg2IC01NiA0NDUgLTE4OCA3NTYgLTM4NyAyMTEgLTEzNAogICAyNzQgLTE4MSAyNTAgLTE4NSAtNzUgLTEyIC0xMzMgLTUwIC0xNjIgLTEwNiAtMTkgLTM1IC0yMSAtMTM2IC00IC0xNzkgbDExCiAgIC0yNyAtOTA3IDIgLTkwNiAzIC01OSAxNjAgYy0xMTAgMzAyIC0yOTggODc4IC0yOTggOTE2IDAgNiA5NSAyIDI5MCAtMTF6Ii8+CiAgIDxwYXRoIGQ9Ik0yNjMzIDMxMjUgYy0yMjMgLTQwIC00MTAgLTE0MSAtNTY4IC0zMDYgLTEzMiAtMTM4IC0yMTMgLTI4MyAtMjYyCiAgIC00NjcgLTIyIC04MyAtMjYgLTExOSAtMjYgLTI0NyAtMSAtMTY5IDEwIC0yMzYgNjUgLTM4MiA4NyAtMjMwIDI3MSAtNDM2IDQ5MwogICAtNTUxIDg1IC00NCAxNzggLTc4IDI3MSAtOTggMTA3IC0yMyAzMTIgLTIzIDQxOSAxIDM5MiA4NCA2OTkgMzc1IDgwMiA3NjEgMjMKICAgODYgMjYgMTIwIDI3IDI1NCAxIDE1OCAtNSAxOTkgLTQ2IDMzMCAtOTggMzEwIC0zNTUgNTY3IC02NjggNjY5IC0xNTAgNTAKICAgLTM1NCA2NCAtNTA3IDM2eiBtMzUwIC0zMDEgYzI0OSAtNTYgNDU3IC0yNDcgNTQzIC00OTkgMjUgLTcyIDI4IC05NSAyOCAtMjIwCiAgIDEgLTE1MyAtMTUgLTIyOCAtNzQgLTM0NSAtOTQgLTE4NiAtMjgzIC0zMzcgLTQ4NSAtMzg2IC05NiAtMjQgLTI2OCAtMjQgLTM2MAogICAwIC0zMjAgODQgLTU0NCAzNTUgLTU2MiA2ODEgLTIwIDM1OSAyMDkgNjczIDU1OCA3NjUgOTQgMjQgMjUzIDI2IDM1MiA0eiIvPgogICA8cGF0aCBkPSJNMjYwMCAyNjk3IGMtMzYgLTEzIC04NSAtMzYgLTEwOSAtNTEgbC00NCAtMjggMTE2IC0xMTUgYzgxIC04MiAxMjAKICAgLTExNCAxMzEgLTExMCAxNCA2IDE2IDI5IDE2IDE2NyAwIDE4NiA2IDE3OCAtMTEwIDEzN3oiLz4KICAgPHBhdGggZD0iTTI5MjAgMjU2MSBjMCAtMTM5IDIgLTE2MiAxNiAtMTY4IDExIC00IDUwIDI4IDEzMCAxMDggbDExNSAxMTQgLTI4CiAgIDIyIGMtMzQgMjggLTEzOCA3MCAtMTkzIDc5IGwtNDAgNyAwIC0xNjJ6Ii8+CiAgIDxwYXRoIGQ9Ik0yMjgyIDI0NDggYy0yOCAtMzYgLTkyIC0xOTEgLTkyIC0yMjUgMCAtMTAgMzQgLTEzIDE2NSAtMTMgMTUxIDAKICAgMTY1IDEgMTY1IDE4IDAgMTUgLTIwNiAyMzIgLTIyMSAyMzIgLTQgMCAtMTEgLTYgLTE3IC0xMnoiLz4KICAgPHBhdGggZD0iTTMyMjIgMjM1MSBjLTYyIC01OSAtMTEyIC0xMTUgLTExMiAtMTI0IDAgLTE1IDE3IC0xNyAxNjUgLTE3IDEzMSAwCiAgIDE2NSAzIDE2NSAxMyAwIDQwIC02OSAyMDUgLTk1IDIyNyAtNyA2IC00OCAtMjcgLTEyMyAtOTl6Ii8+CiAgIDxwYXRoIGQ9Ik0yNzgxIDIzMzIgYy0xMiAtMjIgMTEgLTYyIDM0IC02MiA4IDAgMjEgMTAgMjkgMjIgMjAgMjggNCA1OCAtMjkgNTggCiAgIC0xMyAwIC0yOSAtOCAtMzQgLTE4eiIvPgogICA8cGF0aCBkPSJNMjc0OSAyMTYxIGMtMzIgLTMzIC0zNyAtNjcgLTE0IC0xMTAgMjkgLTU3IDEwNCAtNjQgMTUxIC0xNCA1MyA1NyA5IAogICAxNTMgLTcxIDE1MyAtMjcgMCAtNDQgLTggLTY2IC0yOXoiLz4KICAgPHBhdGggZD0iTTI1NzAgMjEyNSBjLTI2IC0zMiAxMyAtODEgNDggLTU5IDI0IDE2IDI3IDQ1IDYgNjEgLTIzIDE3IC0zOSAxNiAtNTQgLTJ6Ii8+CiAgIDxwYXRoIGQ9Ik0zMDA2IDIxMjQgYy0yMCAtMTkgLTIwIC0zOCAtMiAtNTQgMjMgLTE5IDYxIC04IDY0IDE4IDcgNDQgLTMyIDY3IC02MiAzNnoiLz4KICAgPHBhdGggZD0iTTIxOTAgMTk3NSBjMCAtMjkgNDEgLTE0MCA3MiAtMTk0IGwzMSAtNTMgMTE3IDExNyBjNzEgNzEgMTE2IDEyMyAxMTMgCiAgIDEzMSAtNCAxMSAtNDAgMTQgLTE2OSAxNCAtMTQxIDAgLTE2NCAtMiAtMTY0IC0xNXoiLz4KICAgPHBhdGggZD0iTTMxMTAgMTk3MiBjMCAtOSA1MSAtNjggMTE0IC0xMzEgbDExNCAtMTE0IDMxIDU0IGMzMCA1MSA3MSAxNjUgNzEgMTk1IAogICAwIDExIC0zMSAxNCAtMTY1IDE0IC0xNTEgMCAtMTY1IC0xIC0xNjUgLTE4eiIvPgogICA8cGF0aCBkPSJNMjc4MCAxOTAxIGMtNyAtMTUgLTUgLTI0IDggLTQxIDMyIC00MCA4NSAtNCA2MiA0MSAtMTQgMjUgLTU2IDI1IC03MCAweiIvPgogICA8cGF0aCBkPSJNMjU2MiAxNjk3IGMtNjEgLTYyIC0xMTIgLTExNSAtMTEyIC0xMTkgMCAtMTggMjA4IC0xMDggMjQ5IC0xMDggNwogICAwIDExIDU0IDExIDE2NCAwIDE0MCAtMiAxNjUgLTE2IDE3MCAtOSAzIC0xNiA2IC0xNyA2IC0xIDAgLTUzIC01MSAtMTE1IC0xMTN6Ii8+CiAgIDxwYXRoIGQ9Ik0yOTMzIDE4MDMgYy0xNSAtNiAtMTkgLTMzMyAtNCAtMzMzIDQ2IDAgMjUxIDg4IDI1MSAxMDggMCA5IC0yMjMgMjMyIAogICAtMjMwIDIzMSAtMyAwIC0xMSAtMyAtMTcgLTZ6Ii8+CiAgIDxwYXRoIGQ9Ik0xMDcwMCAzMTE5IGMtMzkwIC04NCAtNjk2IC0zNzYgLTc5NyAtNzU5IC0zMSAtMTE3IC00MSAtMjkyIC0yNCAtNDExIAogICAzMyAtMjI3IDE1MCAtNDUzIDMxOCAtNjA5IDI2NyAtMjUwIDY0MyAtMzQ0IDk5MyAtMjQ5IDExNyAzMiAyODMgMTE4IDM4MCAxOTYgCiAgIDQ4NyAzOTYgNTE4IDExMjggNjcgMTU2MCAtOTcgOTMgLTE2NiAxNDAgLTI5MCAxOTggLTEzNyA2NCAtMjM1IDg2IC00MDcgOTEgLTEyMCAKICAgMyAtMTYyIDAgLTI0MCAtMTd6IG00NDUgLTMxMyBjMjM4IC04MSA0MDkgLTI1OCA0ODYgLTUwNiAzMCAtOTYgMzMgLTI4OSA1IC0zODggCiAgIC0xMTAgLTQwMCAtNTEzIC02MzcgLTkxMSAtNTM2IC0xNDkgMzggLTMxMyAxNDcgLTQwMiAyNjcgLTE3NiAyMzggLTIwMyA1MzMgLTcxIAogICA3OTcgMzQgNjkgNjAgMTAzIDEzOCAxODAgNzcgNzggMTExIDEwNCAxODEgMTM5IDEyOSA2NSAyMDcgODEgMzY0IDc3IDEwOSAtMyAxNDMgLTcgMjEwIC0zMHoiLz4KICAgPHBhdGggZD0iTTEwNzAzIDI3MDAgYy01NCAtMTkgLTE1MyAtNzEgLTE1MyAtODAgMCAtMyA1MSAtNTcgMTE0IC0xMTkgODAgLTgwIAogICAxMTkgLTExMiAxMzAgLTEwOCAxNCA1IDE2IDI5IDE2IDE2NyBsMCAxNjAgLTI3IC0xIGMtMTYgMCAtNTIgLTkgLTgwIC0xOXoiLz4KICAgPHBhdGggZD0iTTExMDIwIDI1NjEgYzAgLTEzOSAyIC0xNjIgMTYgLTE2OCAyMiAtOCAyNDcgMjE2IDIzNCAyMzIgLTE3IDIwIC0xNjMgCiAgIDg0IC0yMDcgOTEgbC00MyA3IDAgLTE2MnoiLz4KICAgPHBhdGggZD0iTTEwMzY2IDI0MjQgYy0yOSAtNDQgLTc2IC0xNjUgLTc2IC0xOTQgMCAtMTkgNyAtMjAgMTY1IC0yMCAxMjYgMCAxNjUgCiAgIDMgMTY1IDEzIDAgNyAtNTEgNjMgLTExNCAxMjYgbC0xMTQgMTE0IC0yNiAtMzl6Ii8+CiAgIDxwYXRoIGQ9Ik0xMTMxMyAyMzQ4IGMtNjEgLTYyIC0xMDkgLTExOSAtMTA2IC0xMjUgNiAtMTUgMzMzIC0xOSAzMzMgLTQgMCA0NSAtODggCiAgIDI0MSAtMTA4IDI0MSAtNCAwIC01NyAtNTEgLTExOSAtMTEyeiIvPgogICA8cGF0aCBkPSJNMTA4ODIgMjMzOCBjLTE3IC0xNyAtMTUgLTMyIDcgLTUyIDE2IC0xNCAyMyAtMTUgNDEgLTYgMzEgMTcgMjQgNjQgLTEwIAogICA2OCAtMTQgMiAtMzEgLTMgLTM4IC0xMHoiLz4KICAgPHBhdGggZD0iTTEwODQ2IDIxNTkgYy02OCAtODEgMTcgLTE5NCAxMTAgLTE0NCA4OSA0OCA1NiAxNzUgLTQ2IDE3NSAtMzAgMCAtNDQgCiAgIC02IC02NCAtMzF6Ii8+CiAgIDxwYXRoIGQ9Ik0xMDY3MCAyMTI2IGMtMTkgLTIzIC04IC02MSAxOCAtNjQgNDQgLTcgNjcgMzIgMzYgNjIgLTE5IDIwIC0zOCAyMCAtNTQgMnoiLz4KICAgPHBhdGggZD0iTTExMTA2IDIxMjcgYy0yMSAtMTYgLTE4IC00NSA3IC02MSAzNyAtMjMgNzcgMzUgNDEgNjEgLTEwIDcgLTIxIDEzIC0yNCAKICAgMTMgLTMgMCAtMTQgLTYgLTI0IC0xM3oiLz4KICAgPHBhdGggZD0iTTEwMjkwIDE5NzAgYzAgLTI5IDQzIC0xNDEgNzQgLTE5NSBsMjggLTQ4IDExNiAxMTYgYzgxIDgxIDExMyAxMjAgMTA5IAogICAxMzEgLTYgMTQgLTI5IDE2IC0xNjcgMTYgLTE1MiAwIC0xNjAgLTEgLTE2MCAtMjB6Ii8+CiAgIDxwYXRoIGQ9Ik0xMTIwNyAxOTc4IGMtMyAtNyA0NyAtNjYgMTExIC0xMzAgbDExNiAtMTE4IDI3IDQzIGMyNyA0NCA3OSAxNzcgNzkgMjAzIAogICAwIDEyIC0yOCAxNCAtMTY0IDE0IC0xMjIgMCAtMTY2IC0zIC0xNjkgLTEyeiIvPgogICA8cGF0aCBkPSJNMTA4ODEgMTkwMSBjLTE0IC0yNSAtNSAtNDggMjAgLTU2IDI3IC05IDUxIDEzIDQ3IDQ0IC00IDM0IC01MSA0MyAtNjcgMTJ6Ii8+IAogICA8cGF0aCBkPSJNMTA2NjIgMTY5NyBjLTYxIC02MiAtMTEyIC0xMTUgLTExMiAtMTE5IDAgLTIwIDIwMSAtMTA4IDI0NyAtMTA4IDEwIDAgMTMgCiAgIDM0IDEzIDE2NCAwIDE0MCAtMiAxNjUgLTE2IDE3MCAtOSAzIC0xNiA2IC0xNyA2IC0xIDAgLTUzIC01MSAtMTE1IC0xMTN6Ii8+IAogICA8cGF0aCBkPSJNMTEwMzMgMTgwMyBjLTEwIC0zIC0xMyAtNDcgLTEzIC0xNjkgMCAtOTAgNCAtMTY0IDggLTE2NCAzNiAwIDE4NiA2MSAyMzkgCiAgIDk4IDE2IDEwIC0yMTYgMjQyIC0yMzQgMjM1eiIvPiA8L2c+CiAgIDwvc3ZnPg=="
-            width="50"></td>
-        <td>asdasd</td>
-        <td>1</td>
-        <td>10.00</td>
-      </tr>
-    </tbody>
-  </table>
+      <tbody>
+        <tr>
+          <th>Number</th>
+          <th>Car</th>
+          <th>Name</th>
+          <th class="wins">Wins </th>
+          <th class="time">Best time (seconds) </th>
+        </tr>
+      </tbody>
     `;
-
     return winnersHTML;
   }
 
-  static renderTitle(title: string) {
-    const titleHTML = document.createElement('h1');
-    titleHTML.innerHTML = `<h1>${title}</h1>`;
-
-    return titleHTML;
-  }
-
-  static renderPageButtons() {
-    const pageButtonsHTML = document.createElement('div');
-    pageButtonsHTML.classList.add('page__buttons');
-    pageButtonsHTML.innerHTML = `
-      <button class="prev">prev</button>
-      <button class="next">next</button>
+  static renderWinner(winner: IWinnerCar) {
+    const {
+      color,
+      name,
+      wins,
+      time,
+      position,
+    } = winner;
+    const winnerHTML = document.createElement('tr');
+    winnerHTML.innerHTML = `
+        <tr>
+          <td>${position}</td>
+            <td>
+            ${View.renderCarImage(color)}
+            </td>
+            <td>${name}</td>
+            <td>${wins}</td>
+          <td>${time}</td>
+        </tr>
     `;
 
-    return pageButtonsHTML;
+    return winnerHTML;
   }
 }

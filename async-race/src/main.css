@@ -14,7 +14,9 @@ button {
 }
 
 .hidden {
-  display: none;
+  /* display: none; */
+  opacity: 0;
+  visibility: hidden;
 }
 
 .car__list {
@@ -37,12 +39,15 @@ h1 {
   margin: 0;
 }
 
-.road {
+.garage__item {
   display: flex;
   align-items: center;
   gap: 10px;
   position: relative;
+}
 
+.r {
+  width: 100%;
 }
 
 .flag {
@@ -65,4 +70,13 @@ h1 {
 .disabled {
   opacity: 0.3;
   pointer-events: none;
+}
+
+.winners {
+  text-align: center;
+}
+
+.time,
+.wins {
+  cursor: pointer;
 }

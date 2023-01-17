@@ -1,7 +1,6 @@
 import ControlPanel from './ControlPanel';
 import Garage from './Garage';
 import PageButtons from './PageButtons';
-import View from './View';
 
 export default class MainPage {
   private container: HTMLElement = document.createElement('div');
