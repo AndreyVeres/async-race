@@ -1,7 +1,25 @@
-export interface ICar {
+export interface IRoute {
   name: string;
-  id?: number;
+  component: () => void;
+}
+
+export interface CarsProps {
+  name: string;
   color: string;
+}
+
+export interface ICar extends CarsProps {
+  id: number;
+}
+
+export interface IWinner {
+  id: number;
+  wins: number;
+  time: number;
+}
+
+export interface IWinnerCar extends ICar, IWinner {
+  position: number;
 }
 
 export interface IEngine {
@@ -18,5 +36,10 @@ export enum METHODS {
 
 export enum ENGINESTATE {
   STARTED = 'started',
-  STOPPED = 'stopped'
+  STOPPED = 'stopped',
+  DRIVE = 'drive'
+}
+
+export interface IAnimations {
+  [key: number]: number;
 }
