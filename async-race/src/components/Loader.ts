@@ -1,9 +1,9 @@
-import { ICar } from '../types/types';
+import { CarsProps, METHODS } from '../types/types';
 
 export default class Loader {
-  baseLink = 'http://127.0.0.1:3000';
+  private baseLink = 'http://127.0.0.1:3000';
 
-  async getData(endpoint: string, _method?: string, body?: ICar) {
+  async getData(endpoint: string, _method?: string, body?: CarsProps) {
     const url = `${this.baseLink}/${endpoint}`;
 
     const request = await fetch(url, {
@@ -25,4 +25,10 @@ export default class Loader {
     }
     return res;
   }
+
+  switchEngine = async (id: number, status: string) => {
+    const engine = await this.getData(`engine?id=${id}&status=${status}`, METHODS.PATCH)
+      .then((res) => res.json());
+    return engine;
+  };
 }
