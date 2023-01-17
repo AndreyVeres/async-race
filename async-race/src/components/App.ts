@@ -1,16 +1,17 @@
-import Car from './Car';
-import Garage from './Garage';
-import View from './View';
+import MainPage from './MainPage';
+import Navigation from './Navigation';
 import Winners from './Winners';
 
 export default class App {
   private container: HTMLElement;
+  private MainPage: MainPage;
   private winners: Winners;
-  private garage: Garage;
+  private navigation: Navigation;
   constructor() {
     this.container = document.body;
-    this.garage = new Garage();
+    this.navigation = new Navigation();
     this.winners = new Winners();
+    this.MainPage = new MainPage();
   }
 
   static changePage() {
@@ -28,48 +29,11 @@ export default class App {
     });
   }
 
-  start() {
-    this.container.append(View.renderNavigation());
-    this.container.append(View.renderControls());
-    this.container.append(this.garage.render());
+  async start() {
+    this.container.append(this.navigation.render());
+    this.container.append(await this.MainPage.render());
+
     this.container.append(this.winners.render());
-    this.container.append(View.renderPageButtons());
-
     App.changePage();
-
-    const formCreate = document.querySelector('.create');
-    const formUpdate = document.querySelector('.update');
-
-    const garageWrapper = document.querySelector('.garage');
-    const prevButtonPage = document.querySelector('.prev');
-    const nextButtonPage = document.querySelector('.next');
-
-    formUpdate?.addEventListener('submit', (e) => {
-      this.garage.updateCar(e);
-    });
-
-    formCreate?.addEventListener('submit', (e) => {
-      this.garage.createCar(e);
-    });
-
-    prevButtonPage?.addEventListener('click', () => {
-      this.garage.prevPage();
-    });
-
-    nextButtonPage?.addEventListener('click', () => {
-      this.garage.nextPage();
-    });
-
-    garageWrapper?.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      const { id } = target.dataset;
-      if (target.classList.contains('select') && id) {
-        this.garage.selectCarToUpdate(id);
-      }
-
-      if (target.classList.contains('remove-button') && id) {
-        this.garage.deleteCar(id);
-      }
-    });
   }
 }
