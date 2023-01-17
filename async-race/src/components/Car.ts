@@ -58,23 +58,33 @@ export default class Car {
       console.log(`engine ${this.car.name} already started`);
       return;
     }
-
     this.engineStatus = ENGINESTATE.STARTED;
     const engine: IEngine = await this.loader.switchEngine(this.car.id, ENGINESTATE.STARTED);
 
-    animation(this.driver, engine.velocity, engine.distance, this.car.id);
+    animation(
+      this.driver,
+      engine.velocity,
+      engine.distance,
+      this.car.id
+    );
+
     this.switchButtonsState();
-    try {
-      await this.drive();
-    } catch (error) {
-      // cancelAnimationFrame(Car.animations[this.car.id]);
-      cancelAnimationFrame(Store.animations[this.car.id]);
-    }
+
+    // eslint-disable-next-line consistent-return,, no-async-promise-executor
+    return new Promise(async (resolve) => {
+      try {
+        await this.drive().then(() => resolve(this.car.id));
+        console.log('winner');
+      } catch {
+        cancelAnimationFrame(Store.animations[this.car.id]);
+      }
+    });
   };
 
   drive = async () => {
     const engine = await this.loader.switchEngine(this.car.id, ENGINESTATE.DRIVE);
-    // .then((res) => console.log(res));
+
+    return engine;
   };
 
   stopEngine = async () => {
