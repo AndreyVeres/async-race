@@ -1,6 +1,7 @@
 import Loader from './Loader';
 import { CarsProps, ICar, METHODS } from '../types/types';
 import Car from './Car';
+import { Store } from './Store';
 
 export default class Garage {
   private container: HTMLElement = document.createElement('div');
@@ -9,34 +10,32 @@ export default class Garage {
   private pageTitle: HTMLElement = document.createElement('div');
   private allCarsCount: string | null = '';
   protected loader = new Loader();
-  private pageSize = 7;
-  private currentPage = 1;
   private carsInGarage: Car[] = [];
   constructor() {
     this.carList = document.createElement('div');
   }
 
   prevPage() {
-    if (this.currentPage - 1 === 0) return;
-    this.currentPage -= 1;
+    if (Store.currentPage - 1 === 0) return;
+    Store.currentPage -= 1;
     this.updateGarage();
   }
 
   nextPage() {
-    if (this.allCarsCount) {
-      if (this.currentPage + 1
-        > Math.ceil(parseInt(this.allCarsCount, 10) / this.pageSize)) return;
+    if (Store.allCarsCount) {
+      if (Store.currentPage + 1
+        > Math.ceil(parseInt(Store.allCarsCount, 10) / Store.pageSize)) return;
     }
-    this.currentPage += 1;
+    Store.currentPage += 1;
     this.updateGarage();
   }
 
   async initGarage() {
-    await this.loader.getData(`garage?_page=${this.currentPage}&_limit=${this.pageSize}`)
+    await this.loader.getData(`garage?_page=${Store.currentPage}&_limit=${Store.pageSize}`)
       .then((res: Response) => {
         this.allCarsCount = res.headers.get('X-Total-Count');
         this.title.innerHTML = `Garage size : ${this.allCarsCount}`;
-        this.pageTitle.innerHTML = `page : ${this.currentPage}`;
+        this.pageTitle.innerHTML = `page : ${Store.currentPage}`;
         return res.json();
       })
       .then((cars: ICar[]) => {
@@ -114,10 +113,12 @@ export default class Garage {
     });
   };
 
-  raceDEMO = () => {
-    this.carsInGarage.forEach((car) => {
-      car.startEngine();
-    });
+  race = async () => {
+    const promises = this.carsInGarage.map(async (car) => await car.startEngine());
+    console.log(promises);
+    const res = await Promise.any(promises);
+    console.log(res);
+    // console.log(await promise);
   };
 
   async render() {
