@@ -1,28 +1,27 @@
-import View from './View';
 import Loader from './Loader';
-import { ICar, METHODS } from '../types/types';
+import { CarsProps, ICar, METHODS } from '../types/types';
 import Car from './Car';
 
 export default class Garage {
-  private container: HTMLElement;
-  private carList: HTMLElement;
-  private title: HTMLElement;
-  private pageTitle: HTMLElement;
-  private allCarsCount: string | null;
-  protected loader: Loader;
-  private pageSize: number;
-  private currentPage: number;
-  private carsInGarage: any[]
+  private container: HTMLElement = document.createElement('div');
+  public carList: HTMLElement;
+  private title: HTMLElement = document.createElement('h1');
+  private pageTitle: HTMLElement = document.createElement('div');
+  private allCarsCount: string | null = '';
+  protected loader = new Loader();
+  private pageSize = 7;
+  private currentPage = 1;
+  private carsInGarage: Car[] = [];
   constructor() {
-    this.loader = new Loader();
-    this.container = document.createElement('div');
+    //   // this.loader = new Loader();
+    //   // this.container;
     this.carList = document.createElement('div');
-    this.title = document.createElement('h1');
-    this.pageTitle = document.createElement('div');
-    this.currentPage = 1;
-    this.allCarsCount = '';
-    this.pageSize = 7;
-    this.carsInGarage = []
+    //   // this.title;
+    //   // this.pageTitle;
+    //   // this.currentPage = 1;
+    //   // this.allCarsCount = '';
+    //   // this.pageSize = 7;
+    //   // this.carsInGarage = [];
   }
 
   prevPage() {
@@ -49,10 +48,11 @@ export default class Garage {
         return res.json();
       })
       .then((cars: ICar[]) => {
-
+        this.carsInGarage = [];
         cars.map((car: ICar) => {
-          const newCar = new Car(car).render();
-          this.carList.append(newCar)
+          const newCar = new Car(car);
+          this.carsInGarage.push(newCar);
+          this.carList.append(newCar.render());
         });
       });
   }
@@ -61,25 +61,24 @@ export default class Garage {
     e.preventDefault();
     const target = e.target as HTMLFormElement;
 
-    const newCarProps: ICar = {
+    const newCarProps: CarsProps = {
       name: target.carName.value,
       color: target.carColor.value,
     };
 
     await this.loader.getData('garage', METHODS.POST, newCarProps)
       .then((res: Response) => res.json())
-      .then((car: ICar) => {
-        const newCar = new Car(car).render()
-        this.carList.append(newCar)
-        this.updateGarage()
+      .then(() => {
+        this.updateGarage();
       });
-     
   }
 
-  deleteCar(id: string) {
-    this.loader.getData(`garage/${id}`, METHODS.DELETE);
-    document.getElementById(`${id}`)?.remove();
-    this.updateGarage();
+  async deleteCar(id: string) {
+    await this.loader.getData(`garage/${id}`, METHODS.DELETE)
+      .then((res) => res.json())
+      .then(() => {
+        this.updateGarage();
+      });
   }
 
   async selectCarToUpdate(id: string) {
@@ -99,10 +98,10 @@ export default class Garage {
     e.preventDefault();
     const target = e.target as HTMLFormElement;
     const id = target.carId.value;
-
-    const updatedCarProps: ICar = {
+    const updatedCarProps: CarsProps = {
       name: target.carName.value,
       color: target.carColor.value,
+
     };
 
     await this.loader.getData(`garage/${id}`, METHODS.PUT, updatedCarProps);
@@ -113,20 +112,39 @@ export default class Garage {
 
   updateGarage() {
     this.carList.innerHTML = '';
+
     this.initGarage();
   }
 
-  render() {
-    this.initGarage();
+  resetAllCars = () => {
+    this.carsInGarage.map((car) => {
+      car.stopEngine();
+    });
+  };
+
+  raceDEMO = () => {
+    this.carsInGarage.forEach((car) => {
+      car.startEngine();
+    });
+  };
+
+  // static remove = () => {
+  //   this.container.remove();
+  // };
+
+  async render() {
+    await this.initGarage();
     this.container.append(this.title);
     this.container.append(this.pageTitle);
     this.container.append(this.carList);
     this.container.classList.add('garage');
     this.carList.classList.add('car__list');
 
+    // const raceButton = document.querySelector('.race-button');
+    // const resetButton = document.querySelector('.reset-button');
 
-    
-
+    // raceButton?.addEventListener('click', this.raceDEMO);
+    // resetButton?.addEventListener('click', this.resetAllCars);
     return this.container;
   }
 }
