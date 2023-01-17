@@ -36,7 +36,7 @@ export default class MainPage {
       this.garage.createCar(e);
     });
 
-    raceButton?.addEventListener('click', this.garage.raceDEMO);
+    raceButton?.addEventListener('click', this.garage.race);
     resetButton?.addEventListener('click', this.garage.resetAllCars);
 
     prevButtonPage?.addEventListener('click', () => {
