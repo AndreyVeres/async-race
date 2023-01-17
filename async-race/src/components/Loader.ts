@@ -31,4 +31,18 @@ export default class Loader {
       .then((res) => res.json());
     return engine;
   };
+
+  getWinners = async () => {
+    const winners = await this.getData('winners')
+      .then((res) => res.json());
+
+    return winners;
+  };
+
+  getCar = async (id: number) => {
+    const car = await this.getData(`garage/${id}`)
+      .then((res) => res.json());
+
+    return car;
+  };
 }
