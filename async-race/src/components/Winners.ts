@@ -1,10 +1,12 @@
 import { IWinner, IWinnerCar } from '../types/types';
+
 import Loader from './Loader';
 import View from './View';
 
 export default class Winners {
   container: HTMLElement;
   loader: Loader;
+
   constructor() {
     this.container = this.renderWinnersContainer();
     this.loader = new Loader();
