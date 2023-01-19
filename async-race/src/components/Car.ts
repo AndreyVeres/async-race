@@ -53,11 +53,8 @@ export default class Car {
     return this.container;
   }
 
-  startEngine = async () => {
-    if (this.engineStatus === ENGINESTATE.STARTED) {
-      console.log(`engine ${this.car.name} already started`);
-      return;
-    }
+  startEngine = async ():Promise<number> => {
+
     this.engineStatus = ENGINESTATE.STARTED;
     const engine: IEngine = await this.loader.switchEngine(this.car.id, ENGINESTATE.STARTED);
 
@@ -73,8 +70,9 @@ export default class Car {
     // eslint-disable-next-line consistent-return,, no-async-promise-executor
     return new Promise(async (resolve) => {
       try {
-        await this.drive().then(() => resolve(this.car.id));
-        console.log('winner');
+        // await this.drive().then(() => resolve(this.car.id));
+        await this.drive()
+        resolve(this.car.id )
       } catch {
         cancelAnimationFrame(Store.animations[this.car.id]);
       }
@@ -93,7 +91,6 @@ export default class Car {
         this.engineStatus = ENGINESTATE.STOPPED;
         this.switchButtonsState();
         cancelAnimationFrame(Store.animations[this.car.id]);
-        // cancelAnimationFrame(Car.animations[this.car.id]);
         this.driver.style.transform = `translateX(${0}px)`;
       });
   };
