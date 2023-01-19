@@ -1,4 +1,5 @@
-import { CarsProps, METHODS } from '../types/types';
+import { CarsProps, IWinnersResponse, METHODS } from '../types/types';
+import { Store } from './Store';
 
 export default class Loader {
   private baseLink = 'http://127.0.0.1:3000';
@@ -33,11 +34,17 @@ export default class Loader {
   };
 
   getWinners = async () => {
-    const winners = await this.getData('winners')
-      .then((res) => res.json());
+    const request = await this.getData(`winners?_page=${Store.winnersCurrentPage}&_limit=${Store.winnersPageSize}&_sort=${Store.sortType}&_order=${Store.order}`)
+    const winners = await request.json();
 
-    return winners;
-  };
+    const response: IWinnersResponse = {
+      status: request.status,
+      totalCount: request.headers.get('X-Total-Count'),
+      winnersCars: winners,
+    }
+
+    return response;
+  }
 
   getCar = async (id: number) => {
     const car = await this.getData(`garage/${id}`)
@@ -45,4 +52,16 @@ export default class Loader {
 
     return car;
   };
+
+
+  getWinner = async (id: number) => {
+    const request = await this.getData(`winners/${id}`);
+    const winner = await request.json()
+
+    return {
+      status : request.status,
+      winner
+    }
+
+  }
 }
