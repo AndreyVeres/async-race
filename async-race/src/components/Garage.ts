@@ -10,7 +10,7 @@ export default class Garage {
   private pageTitle: HTMLElement = document.createElement('div');
   private allCarsCount: string | null = '';
   protected loader = new Loader();
-  private carsInGarage: Car[] = [];
+  // private carsInGarage: Car[] = [];
   constructor() {
     this.carList = document.createElement('div');
   }
@@ -39,10 +39,10 @@ export default class Garage {
         return res.json();
       })
       .then((cars: ICar[]) => {
-        this.carsInGarage = [];
+        Store.carsInGarage = [];
         cars.map((car: ICar) => {
           const newCar = new Car(car);
-          this.carsInGarage.push(newCar);
+          Store.carsInGarage.push(newCar);
           this.carList.append(newCar.render());
         });
       });
@@ -103,22 +103,27 @@ export default class Garage {
 
   updateGarage() {
     this.carList.innerHTML = '';
-
     this.initGarage();
   }
 
   resetAllCars = () => {
-    this.carsInGarage.map((car) => {
+    Store.carsInGarage.map((car) => {
       car.stopEngine();
     });
   };
 
   race = async () => {
-    const promises = this.carsInGarage.map(async (car) => await car.startEngine());
-    console.log(promises);
-    const res = await Promise.any(promises);
-    console.log(res);
-    // console.log(await promise);
+    const promises = Store.carsInGarage.map(async (car) => await car.startEngine());
+    const winnerId = await Promise.any(promises);
+
+    // try {
+    //   const getWinner = await this.loader.getWinner(winnerId)
+    //   const { status, winner } = getWinner
+      
+    // } catch (e) {
+
+    // }
+
   };
 
   async render() {
