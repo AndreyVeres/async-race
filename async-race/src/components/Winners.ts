@@ -1,37 +1,63 @@
-import { IWinner, IWinnerCar } from '../types/types';
+import { IWinner, IWinnerCar, IWinnersResponse } from '../types/types';
+import { Component } from '../utils/component';
+import Car from './Car';
 
 import Loader from './Loader';
+import { Store } from './Store';
 import View from './View';
+
+
 
 export default class Winners {
   container: HTMLElement;
   loader: Loader;
+  table: HTMLTableElement;
+
 
   constructor() {
-    this.container = this.renderWinnersContainer();
+    this.container = document.createElement('div');
     this.loader = new Loader();
+    this.table = this.renderWinnersContainer()
+
   }
 
+
   initWinners = async () => {
-    const winners = await this.loader.getWinners();
-    winners.forEach(async (winner: IWinner, index: number) => {
-      const winnerCar = await this.loader.getCar(winner.id);
-      if (winnerCar) {
-        const winnerCarData = {
+    const getWinners = await this.loader.getWinners();
+    const { status, totalCount, winnersCars } = getWinners;
+
+    if (totalCount) {
+      new Component(this.container, 'h1', ['winners-title'], `Total Winners ( ${totalCount} )`);
+    }
+
+    if (status === 200) {
+      const table = new Component(this.container, 'table', ['winners-table'])
+
+
+      winnersCars.map(async (c: IWinner, index: number) => {
+        const winnerCar = await this.loader.getCar(c.id);
+
+        const winnerCarData: IWinnerCar = {
           position: index,
-          id: winner.id,
-          name: winnerCar.name,
-          color: winnerCar.color,
-          wins: winner.wins,
-          time: winner.time,
-        };
-        this.container.append(this.renderWinnerItem(winnerCarData));
-      }
-    });
-  };
+          id: c.id,
+          wins: c.wins,
+          time: c.time,
+          ...winnerCar
+        }
+        const newCar = new Car(winnerCarData)
+        Store.winnersCars.push(newCar)
+        this.table.append(this.renderWinnerItem(winnerCarData))
+      })
+
+    }
+
+  }
 
   async render() {
     await this.initWinners();
+
+    this.container.append(this.table)
+
 
     const winsButton = this.container.querySelector('.wins');
     const timeButton = this.container.querySelector('.time');
@@ -43,7 +69,7 @@ export default class Winners {
     const winnersHTML = document.createElement('table');
     winnersHTML.classList.add('winners');
     winnersHTML.innerHTML = `
-      <tbody>
+     
         <tr>
           <th>Number</th>
           <th>Car</th>
@@ -51,7 +77,7 @@ export default class Winners {
           <th class="wins">Wins </th>
           <th class="time">Best time (seconds) </th>
         </tr>
-      </tbody>
+    
     `;
     return winnersHTML;
   };
