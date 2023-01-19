@@ -8,6 +8,12 @@ export interface CarsProps {
   color: string;
 }
 
+export interface IWinnersResponse {
+  status: number
+  totalCount:string | null,
+  winnersCars :IWinner[]
+}
+
 export interface ICar extends CarsProps {
   id: number;
 }
