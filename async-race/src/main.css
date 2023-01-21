@@ -193,3 +193,8 @@ td {
 .page-button:active {
   background-color: red;
 }
+
+.winners-table {
+  table-layout: fixed;
+  width: 100%;
+}

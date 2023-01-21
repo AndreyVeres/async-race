@@ -10,8 +10,8 @@ export default class Winners {
   loader: Loader;
 
   pageButtons: PageButtons;
-  table: HTMLTableSectionElement;
   tableWrapper: Component;
+  table: HTMLTableElement;
 
   constructor() {
     this.container = document.createElement('div');
@@ -105,8 +105,8 @@ export default class Winners {
   }
 
   static renderWinnersContainer = () => {
-    const winnersHTML = document.createElement('tbody');
-    winnersHTML.classList.add('winners');
+    const winnersHTML = document.createElement('table');
+    winnersHTML.classList.add('winners-table');
     winnersHTML.innerHTML = `
         <tr>
           <th>id</th>
