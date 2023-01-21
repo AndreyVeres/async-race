@@ -112,8 +112,8 @@ export default class Winners {
           <th>id</th>
           <th>Car</th>
           <th>Name</th>
-          <th class="wins">Wins </th>
-          <th class="time">Best time (seconds) </th>\
+          <th class="wins ${Store.sortType === 'wins' ? Store.order : ''}">Wins </th>
+          <th class="time ${Store.sortType === 'time' ? Store.order : ''}">Time, s</th>
         </tr>
     `;
     return winnersHTML;

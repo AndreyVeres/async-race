@@ -80,6 +80,24 @@ h1 {
 .time,
 .wins {
   cursor: pointer;
+  position: relative;
+}
+
+.ASC::before {
+  transform: rotate(180deg);
+}
+
+.DESC::before {
+  transform: rotate(0deg);
+}
+
+.wins::before,
+.time::before {
+  content: url('./assets/arrow.svg');
+
+  position: absolute;
+  left: 47%;
+  top: -18px;
 }
 
 .winners-wrapper {
@@ -102,6 +120,11 @@ h1 {
   align-items: center;
   color: red;
   font-size: 40px;
+}
+
+.popup-message {
+  text-shadow: 0px 0px 19px red;
+  color: #fff;
 }
 
 th,
@@ -156,7 +179,8 @@ td {
 }
 
 .green:disabled,
-.red:disabled {
+.red:disabled,
+.yellow:disabled {
   opacity: 0.3;
 }
 
@@ -182,13 +206,6 @@ td {
 }
 
 
-.page-button {
-  background-color: green;
-  color: #fff;
-  padding: 3px 15px;
-  border-radius: 7px;
-
-}
 
 .page-button:active {
   background-color: red;
