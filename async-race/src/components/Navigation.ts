@@ -3,8 +3,8 @@ export default class Navigation {
     const headerNavigationHTML = document.createElement('div');
     headerNavigationHTML.classList.add('navigation');
     headerNavigationHTML.innerHTML = `
-      <a href="#/">to garage</a>
-      <a href="#/winners">to winners</a>
+      <a href="#/" class="nav-link">to garage</a>
+      <a href="#/winners" class="nav-link">to winners</a>
     `;
     return headerNavigationHTML;
   };
