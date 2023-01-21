@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('node:path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -19,7 +20,7 @@ const config = {
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: isProduction ? 'static/js/[contenthash].js' : 'static/js/[name].[contenthash].js',
-    publicPath: '/',
+    // publicPath: '/',
     clean: true,
   },
 
