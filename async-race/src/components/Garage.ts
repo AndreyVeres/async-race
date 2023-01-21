@@ -1,18 +1,21 @@
-import Loader from './Loader';
-import { CarsProps, ICar, METHODS } from '../types/types';
+import Loader from '../loader/Loader';
+import { CarsProps, ICar } from '../types/types';
 import Car from './Car';
-import { Store } from './Store';
+import { Store } from '../store/Store';
+import Popup from './Popup';
+import { METHODS } from '../types/consts';
 
 export default class Garage {
   private container: HTMLElement = document.createElement('div');
   private carList: HTMLElement;
   private title: HTMLElement = document.createElement('h1');
   private pageTitle: HTMLElement = document.createElement('div');
-  private allCarsCount: string | null = '';
   protected loader = new Loader();
-  // private carsInGarage: Car[] = [];
+  private popup: Popup;
+
   constructor() {
     this.carList = document.createElement('div');
+    this.popup = new Popup();
   }
 
   prevPage() {
@@ -33,8 +36,8 @@ export default class Garage {
   async initGarage() {
     await this.loader.getData(`garage?_page=${Store.currentPage}&_limit=${Store.pageSize}`)
       .then((res: Response) => {
-        this.allCarsCount = res.headers.get('X-Total-Count');
-        this.title.innerHTML = `Garage size : ${this.allCarsCount}`;
+        Store.allCarsCount = res.headers.get('X-Total-Count');
+        this.title.innerHTML = `Garage size : ${Store.allCarsCount}`;
         this.pageTitle.innerHTML = `page : ${Store.currentPage}`;
         return res.json();
       })
@@ -44,29 +47,29 @@ export default class Garage {
           const newCar = new Car(car);
           Store.carsInGarage.push(newCar);
           this.carList.append(newCar.render());
+          return car;
         });
       });
   }
 
-  async createCar(e: Event) {
-    e.preventDefault();
-    const target = e.target as HTMLFormElement;
+  async createCar(e: Event, randomCar?: CarsProps) {
+    let newCar;
 
-    const newCarProps: CarsProps = {
-      name: target.carName.value,
-      color: target.carColor.value,
-    };
-
-    await this.loader.getData('garage', METHODS.POST, newCarProps)
-      .then((res: Response) => res.json())
-      .then(() => {
-        this.updateGarage();
-      });
+    if (randomCar) {
+      newCar = randomCar;
+    } else {
+      e.preventDefault();
+      const target = e.target as HTMLFormElement;
+      newCar = {
+        name: target.carName.value,
+        color: target.carColor.value,
+      };
+    }
+    await this.loader.getData('garage', METHODS.POST, newCar);
   }
 
   async deleteCar(id: string) {
-    await this.loader.getData(`garage/${id}`, METHODS.DELETE)
-      .then((res) => res.json())
+    await this.loader.deleteCar(id)
       .then(() => {
         this.updateGarage();
       });
@@ -106,24 +109,18 @@ export default class Garage {
     this.initGarage();
   }
 
-  resetAllCars = () => {
-    Store.carsInGarage.map((car) => {
-      car.stopEngine();
-    });
+  static resetAllCars = async () => {
+    Store.carsInGarage.map((car) => car.stopEngine());
   };
 
   race = async () => {
-    const promises = Store.carsInGarage.map(async (car) => await car.startEngine());
-    const winnerId = await Promise.any(promises);
+    const racers = Store.carsInGarage.map(async (car) => car.startEngine());
+    const winnerInfo = await Promise.any(racers);
+    const resetButton = document.querySelector('.reset-button') as HTMLButtonElement;
+    resetButton.disabled = false;
 
-    // try {
-    //   const getWinner = await this.loader.getWinner(winnerId)
-    //   const { status, winner } = getWinner
-      
-    // } catch (e) {
-
-    // }
-
+    this.popup.shopPopup(winnerInfo);
+    this.loader.createWinner(winnerInfo);
   };
 
   async render() {
@@ -131,6 +128,7 @@ export default class Garage {
     this.container.append(this.title);
     this.container.append(this.pageTitle);
     this.container.append(this.carList);
+    this.container.append(this.popup.render());
     this.container.classList.add('garage');
     this.carList.classList.add('car__list');
 
