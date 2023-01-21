@@ -3,8 +3,8 @@ export default class PageButtons {
     const pageButtonsHTML = document.createElement('div');
     pageButtonsHTML.classList.add('page__buttons');
     pageButtonsHTML.innerHTML = `
-      <button class="prev">prev</button>
-      <button class="next">next</button>
+      <button class="page-button prev">prev</button>
+      <button class="page-button next">next</button>
     `;
 
     return pageButtonsHTML;

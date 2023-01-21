@@ -1,5 +1,5 @@
-import Navigation from './Navigation';
-import Router from './Router';
+import Navigation from './components/Navigation';
+import Router from './router/Router';
 
 export default class App {
   private body: HTMLElement = document.body;
@@ -17,6 +17,7 @@ export default class App {
   async start() {
     this.body.append(this.navigation.render());
     this.body.append(this.rootElement);
+
     this.router.initRouter();
   }
 }
