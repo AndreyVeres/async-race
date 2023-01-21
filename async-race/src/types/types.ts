@@ -8,24 +8,16 @@ export interface CarsProps {
   color: string;
 }
 
-export interface IWinnersResponse {
-  status: number
-  totalCount:string | null,
-  winnersCars :IWinner[]
-}
-
-export interface ICar extends CarsProps {
-  id: number;
-}
-
 export interface IWinner {
   id: number;
   wins: number;
   time: number;
 }
 
-export interface IWinnerCar extends ICar, IWinner {
-  position: number;
+export interface IWinnersResponse {
+  status: number;
+  totalCount: string | null;
+  winnersCars: IWinner[];
 }
 
 export interface IEngine {
@@ -33,19 +25,27 @@ export interface IEngine {
   distance: number;
 }
 
-export enum METHODS {
-  POST = 'POST',
-  PUT = 'PUT',
-  DELETE = 'DELETE',
-  PATCH = 'PATCH'
+export interface ICar extends CarsProps {
+  id: number;
 }
 
-export enum ENGINESTATE {
-  STARTED = 'started',
-  STOPPED = 'stopped',
-  DRIVE = 'drive'
+export interface IWinnerCar extends ICar, IWinner {
+  position: number;
+}
+
+export interface IAnimationState {
+
+  time: number;
+  frame: number;
 }
 
 export interface IAnimations {
-  [key: number]: number;
+  [key: number]: IAnimationState;
+}
+
+export interface IWinnerInfo {
+  time: number;
+  id: number;
+  name: string;
+
 }
