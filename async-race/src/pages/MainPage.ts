@@ -32,11 +32,11 @@ export default class MainPage {
 
     const raceButton = this.container.querySelector('.race-button') as HTMLButtonElement;
     const resetButton = this.container.querySelector('.reset-button') as HTMLButtonElement;
-    const randomCarsButton = this.container.querySelector('.generate-button');
+    const randomCarsButton = this.container.querySelector('.generate-button') as HTMLButtonElement;
 
     const garageWrapper = this.container.querySelector('.garage');
-    const prevButtonPage = this.container.querySelector('.prev');
-    const nextButtonPage = this.container.querySelector('.next');
+    const prevButtonPage = this.container.querySelector('.prev') as HTMLButtonElement;
+    const nextButtonPage = this.container.querySelector('.next') as HTMLButtonElement;
 
     randomCarsButton?.addEventListener('click', async (e) => {
       const randomCars = generateRandomCars();
@@ -66,15 +66,22 @@ export default class MainPage {
       this.garage.updateGarage();
     });
 
-    raceButton?.addEventListener('click', () => {
+    raceButton?.addEventListener('click', async () => {
       this.garage.race();
+
       raceButton.disabled = true;
       resetButton.disabled = true;
+      prevButtonPage.disabled = true;
+      nextButtonPage.disabled = true;
+      randomCarsButton.disabled = true;
     });
 
     resetButton?.addEventListener('click', () => {
       Garage.resetAllCars();
       raceButton.disabled = false;
+      prevButtonPage.disabled = false;
+      nextButtonPage.disabled = false;
+      randomCarsButton.disabled = false;
     });
 
     prevButtonPage?.addEventListener('click', () => {

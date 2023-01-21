@@ -118,8 +118,7 @@ export default class Garage {
     const winnerInfo = await Promise.any(racers);
     const resetButton = document.querySelector('.reset-button') as HTMLButtonElement;
     resetButton.disabled = false;
-
-    this.popup.shopPopup(winnerInfo);
+    this.container.append(this.popup.render(winnerInfo));
     this.loader.createWinner(winnerInfo);
   };
 
@@ -128,7 +127,6 @@ export default class Garage {
     this.container.append(this.title);
     this.container.append(this.pageTitle);
     this.container.append(this.carList);
-    this.container.append(this.popup.render());
     this.container.classList.add('garage');
     this.carList.classList.add('car__list');
 
