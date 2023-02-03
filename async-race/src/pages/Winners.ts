@@ -1,5 +1,5 @@
 import { IWinner, IWinnerCar } from '../types/types';
-import Loader from '../loader/Loader';
+import { loader } from '../loader/Loader';
 import { Store } from '../store/Store';
 import renderCarImage from '../utils/renderCarImage';
 import Component from '../utils/component';
@@ -7,7 +7,6 @@ import PageButtons from '../components/PageButtons';
 
 export default class Winners {
   container: HTMLElement;
-  loader: Loader;
 
   pageButtons: PageButtons;
   tableWrapper: Component;
@@ -17,13 +16,13 @@ export default class Winners {
     this.container = document.createElement('div');
     this.tableWrapper = new Component(this.container, 'div', ['winners-wrapper']);
     this.table = Winners.renderWinnersContainer();
-    this.loader = new Loader();
+
     this.pageButtons = new PageButtons();
   }
 
   initWinners = async () => {
     this.table = Winners.renderWinnersContainer();
-    const getWinners = await this.loader.getWinners();
+    const getWinners = await loader.getWinners();
     const { status, totalCount, winnersCars } = getWinners;
     Store.winnerCarsCount = totalCount;
     const winnersTitle = new Component(this.tableWrapper.element, 'h1', ['winners-title'], `Total Winners : ${Store.winnerCarsCount}`);
@@ -31,7 +30,7 @@ export default class Winners {
 
     if (status === 200) {
       winnersCars.map(async (c: IWinner) => {
-        const winnerCar = await this.loader.getCar(c.id);
+        const winnerCar = await loader.getCar(c.id);
 
         const winnerCarData: IWinnerCar = {
 

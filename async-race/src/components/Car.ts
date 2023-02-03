@@ -3,7 +3,7 @@ import {
   IWinnerInfo
 } from '../types/types';
 import flagImage from '../assets/racing-flag.svg';
-import Loader from '../loader/Loader';
+import { loader } from '../loader/Loader';
 import animation from '../utils/animation';
 import { Store } from '../store/Store';
 import renderCarImage from '../utils/renderCarImage';
@@ -14,14 +14,12 @@ import { ENGINESTATE } from '../types/consts';
 export default class Car {
   public car: ICar;
   private container: HTMLElement;
-  private loader: Loader;
   private driver: HTMLElement;
   private controls: HTMLButtonElement[];
   private engineStatus: boolean;
 
   constructor(car: ICar) {
     this.car = car;
-    this.loader = new Loader();
     this.container = this.getCarHTML();
     this.driver = this.container.querySelector('.car') as HTMLElement;
     this.controls = [
@@ -40,7 +38,7 @@ export default class Car {
   }
 
   startEngine = async (): Promise<IWinnerInfo> => {
-    const engine = await this.loader.switchEngine(this.car.id, ENGINESTATE.STARTED);
+    const engine = await loader.switchEngine(this.car.id, ENGINESTATE.STARTED);
     const { velocity, distance } = engine;
 
     animation(this.driver, velocity, distance, this.car.id);
@@ -64,12 +62,12 @@ export default class Car {
   };
 
   drive = async () => {
-    const engine = await this.loader.switchEngine(this.car.id, ENGINESTATE.DRIVE);
+    const engine = await loader.switchEngine(this.car.id, ENGINESTATE.DRIVE);
     return engine;
   };
 
   stopEngine = async () => {
-    await this.loader.switchEngine(this.car.id, ENGINESTATE.STOPPED)
+    await loader.switchEngine(this.car.id, ENGINESTATE.STOPPED)
       .then(() => {
         this.switchButtonsState(false);
 

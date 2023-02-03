@@ -8,7 +8,7 @@ import {
 import { Store } from '../store/Store';
 import { METHODS } from '../types/consts';
 
-export default class Loader {
+class Loader {
   private baseLink = 'http://127.0.0.1:3000';
 
   async getData(endpoint: string, _method?: string, body?: CarsProps | IWinner) {
@@ -108,3 +108,5 @@ export default class Loader {
     }
   };
 }
+
+export const loader = new Loader();

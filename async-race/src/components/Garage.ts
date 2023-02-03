@@ -1,4 +1,4 @@
-import Loader from '../loader/Loader';
+import { loader } from '../loader/Loader';
 import { CarsProps, ICar } from '../types/types';
 import Car from './Car';
 import { Store } from '../store/Store';
@@ -10,7 +10,6 @@ export default class Garage {
   private carList: HTMLElement;
   private title: HTMLElement = document.createElement('h1');
   private pageTitle: HTMLElement = document.createElement('div');
-  protected loader = new Loader();
   private popup: Popup;
 
   constructor() {
@@ -34,7 +33,7 @@ export default class Garage {
   }
 
   async initGarage() {
-    await this.loader.getData(`garage?_page=${Store.currentPage}&_limit=${Store.pageSize}`)
+    await loader.getData(`garage?_page=${Store.currentPage}&_limit=${Store.pageSize}`)
       .then((res: Response) => {
         Store.allCarsCount = res.headers.get('X-Total-Count');
         this.title.innerHTML = `Garage size : ${Store.allCarsCount}`;
@@ -65,18 +64,18 @@ export default class Garage {
         color: target.carColor.value,
       };
     }
-    await this.loader.getData('garage', METHODS.POST, newCar);
+    await loader.getData('garage', METHODS.POST, newCar);
   }
 
   async deleteCar(id: string) {
-    await this.loader.deleteCar(id)
+    await loader.deleteCar(id)
       .then(() => {
         this.updateGarage();
       });
   }
 
   async selectCarToUpdate(id: string) {
-    const res = await this.loader.getData(`garage/${id}`);
+    const res = await loader.getData(`garage/${id}`);
     const oldCarInfo: ICar = await res.json();
     const updateForm: HTMLFormElement | null = document.querySelector('.update');
 
@@ -98,7 +97,7 @@ export default class Garage {
 
     };
 
-    await this.loader.getData(`garage/${id}`, METHODS.PUT, updatedCarProps);
+    await loader.getData(`garage/${id}`, METHODS.PUT, updatedCarProps);
     this.updateGarage();
     const updateForm: HTMLFormElement | null = document.querySelector('.update');
     if (updateForm) updateForm.classList.add('disabled');
@@ -119,7 +118,7 @@ export default class Garage {
     const resetButton = document.querySelector('.reset-button') as HTMLButtonElement;
     resetButton.disabled = false;
     this.container.append(this.popup.render(winnerInfo));
-    this.loader.createWinner(winnerInfo);
+    loader.createWinner(winnerInfo);
   };
 
   async render() {
