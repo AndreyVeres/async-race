@@ -10,6 +10,7 @@ export default class Garage {
   private carList: HTMLElement;
   private title: HTMLElement = document.createElement('h1');
   private pageTitle: HTMLElement = document.createElement('div');
+
   private popup: Popup;
 
   constructor() {

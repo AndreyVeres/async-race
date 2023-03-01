@@ -1,20 +1,36 @@
 export default class Component {
   element: HTMLElement;
-
+  private template: string;
+  private model: Record<string, string>;
+  private parentElement: HTMLElement | null;
   constructor(
-    parentNode: HTMLElement,
+    parentElement: HTMLElement | null,
     tagName: keyof HTMLElementTagNameMap = 'div',
     styles: string[] = [],
-    content = ''
+    template = '',
+    model: Record<string, string> = {}
 
   ) {
+    this.parentElement = parentElement || null;
     this.element = document.createElement(tagName);
+    this.template = template;
+    this.model = model;
+    this.buildTemplate();
+    this.element.innerHTML = this.template;
     this.element.classList.add(...styles);
-    this.element.textContent = content;
 
-    if (parentNode) {
-      parentNode.append(this.element);
-    }
+    if (parentElement) parentElement.append(this.element);
+    else this.render();
+  }
+
+  private buildTemplate() {
+    Object.entries(this.model).forEach(([key, value]) => {
+      this.template = this.template.replaceAll(`{{${key}}}`, value);
+    });
+  }
+
+  render(): HTMLElement {
+    return this.element;
   }
 
   destroy(): void {
