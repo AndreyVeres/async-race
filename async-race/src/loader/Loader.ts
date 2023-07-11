@@ -9,7 +9,7 @@ import { Store } from '../store/Store';
 import { METHODS } from '../types/consts';
 
 class Loader {
-  private baseLink = 'http://127.0.0.1:3000';
+  private baseLink = 'https://async-race-backend-t7bq.onrender.com';
 
   async getData(endpoint: string, _method?: string, body?: CarsProps | IWinner) {
     const url = `${this.baseLink}/${endpoint}`;
